@@ -1,4 +1,4 @@
-Random Dog Images and User Management
+Random Dog Images and User Management (Used Inner CSS & JavaScript)
 This project combines a fun way to browse random dog images with a robust user management system, including user registration and a list of registered users. The application uses Firebase for user authentication and Cloudinary for image storage, ensuring scalability and reliability.
 
 Features:
