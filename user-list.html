@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%; /* Ensure the body and html elements fill the entire viewport */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        body {
+    font-family: Arial, sans-serif;
+    background: url('images/magicpattern-starry-night-1733752766678.png') no-repeat center center fixed, 
+                linear-gradient(to bottom, #000428, #004e92);
+    background-size: cover; /* Make sure the background image covers the entire page */
+    color: #fff;
+    text-align: center;
+}
+
+        .container {
+            padding: 20px;
+        }
+
+        .heading {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            font-size: 18px;
+            color: #ddd;
+        }
+
+        .no-users-text {
+            font-size: 18px;
+            color: #ddd;
+            margin-top: 20px;
+        }
+
+        .home-button {
+            background-color: #007bff;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .user-list {
+            margin-bottom: 20px;
+        }
+
+        .user-card {
+            background-color: #333333;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex; /* Flexbox layout for horizontal alignment */
+            align-items: center; /* Vertically center the content */
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px; /* Space between profile image and name */
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column; /* Stack name and other info vertically */
+            justify-content: center; /* Center the text vertically next to the image */
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Ensure that the content starts from the top */
+            height: auto; /* Adjust to content height */
+        }
+
+        .modal-profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+
+        .modal-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .modal-detail {
+            font-size: 16px;
+            color: #ddd;
+            margin-top: 5px;
+        }
+
+        .modal-phone {
+            font-size: 16px;
+            color: #ddd;
+            margin-top: 10px; /* Adds gap between phone number and close button */
+        }
+
+        .close-button {
+            background-color: #28a745;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            margin-top: 20px; /* Adds a gap between phone number and the close button */
+            align-self: center; /* Center the button horizontally */
+        }
+    </style>
+    <!-- Firebase SDK (non-modular version) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="home-button">← Back to Home</a>
+        <h1 class="heading">Registered Users</h1>
+        <div id="loading" class="loading-text">Loading users...</div>
+        <div id="no-users" class="no-users-text" style="display: none;">No users found.</div>
+        <div id="user-list" class="user-list"></div>
+
+        <!-- Modal -->
+        <div id="user-modal" class="modal">
+            <div class="modal-content">
+                <img id="modal-profile-image" class="modal-profile-image" src="" alt="User Profile">
+                <h2 id="modal-name" class="modal-name"></h2>
+                <p id="modal-email" class="modal-detail"></p>
+                <p id="modal-phone" class="modal-phone"></p>
+                <span id="close-modal" class="close-button">Close</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1eJ0mft0FI7mY3j0jbIvU2cVAB4C7czI",
+            authDomain: "project-bd4f6.firebaseapp.com",
+            projectId: "project-bd4f6",
+            storageBucket: "project-bd4f6.firebasestorage.app",
+            messagingSenderId: "1068005970238",
+            appId: "1:1068005970238:web:f54340137a0580b38fdc6f"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Elements
+        const loadingText = document.getElementById('loading');
+        const userList = document.getElementById('user-list');
+        const noUsersText = document.getElementById('no-users');
+        const userModal = document.getElementById('user-modal');
+        const closeModalButton = document.getElementById('close-modal');
+        const modalProfileImage = document.getElementById('modal-profile-image');
+        const modalName = document.getElementById('modal-name');
+        const modalEmail = document.getElementById('modal-email');
+        const modalPhone = document.getElementById('modal-phone');
+
+        // Function to fetch users from Firestore
+        const fetchUsers = async () => {
+            try {
+                const usersSnapshot = await db.collection('users').orderBy('createdAt', 'desc').get();
+                if (usersSnapshot.empty) {
+                    // Show the "No users found" message if no users exist
+                    noUsersText.style.display = 'block';
+                    loadingText.style.display = 'none';
+                    return;
+                }
+
+                // Clear the user list if there are any previous entries
+                userList.innerHTML = '';
+
+                // Iterate through the documents and add users to the list
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const userCard = document.createElement('div');
+                    userCard.classList.add('user-card');
+                    userCard.innerHTML = `
+                        <img src="${user.imageUrl}" alt="Profile Image" class="profile-image">
+                        <div class="user-info">
+                            <div class="name">${user.firstName} ${user.lastName}</div>
+                        </div>
+                    `;
+                    userCard.addEventListener('click', () => openModal(user));
+                    userList.appendChild(userCard);
+                });
+
+                // Hide the "Loading..." text and "No users found" message after data is fetched
+                loadingText.style.display = 'none';
+                noUsersText.style.display = 'none';
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                loadingText.style.display = 'none';
+            }
+        };
+
+        // Function to open the modal with user details
+        const openModal = (user) => {
+            modalProfileImage.src = user.imageUrl;
+            modalName.textContent = `${user.firstName} ${user.lastName}`;
+            modalEmail.textContent = `Email: ${user.email}`;
+            modalPhone.textContent = `Phone: ${user.phoneNumber}`;
+            userModal.style.display = 'flex';
+        };
+
+        // Function to close the modal
+        const closeModal = () => {
+            userModal.style.display = 'none';
+        };
+
+        // Event listener for closing the modal
+        closeModalButton.addEventListener('click', closeModal);
+
+        // Start fetching users from Firestore
+        fetchUsers();
+    </script>
+</body>
+</html>

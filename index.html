@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome Page</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9; /* Softer light background */
+      color: #333;
+    }
+
+    /* Apply PNG image as background */
+    .gradient-background {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: url('images/magicpattern-starry-night-1733752766678.png') no-repeat center center; /* PNG background */
+      background-size: cover; /* Ensures the image covers the entire background */
+      color: #333333;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* Add subtle background pattern (optional, you can remove it if unnecessary) */
+    .gradient-background::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* Prevent it from interfering with interactive elements */
+    }
+
+    /* Styling for the welcome container */
+    .welcome-container {
+      margin-bottom: 40px;
+      padding: 0 20px;
+      max-width: 600px;
+      /* Remove the background to get rid of the box effect */
+      color: #fff; /* White text color for better contrast */
+    }
+
+    .title-text {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #fff; /* White text for visibility on dark background */
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Subtle shadow for text legibility */
+    }
+
+    .sub-title {
+      font-size: 18px;
+      color: #d1d1d1; /* Light grey color for subtitle */
+      margin-bottom: 20px;
+      line-height: 1.5;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); /* Subtle shadow for subtitle text */
+    }
+
+    /* Buttons container */
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .button {
+      background-color: #5f6368;
+      padding: 14px 40px;
+      border-radius: 30px;
+      margin-bottom: 12px;
+      width: 80%;
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .button:hover {
+      background-color: #4e5456;
+      transform: translateY(-3px);
+    }
+
+    .button:active {
+      background-color: #3e4446;
+      transform: translateY(1px);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gradient-background">
+    <div class="welcome-container">
+      <h1 class="title-text">🌟 Welcome to My App! 🌟</h1>
+      <p class="sub-title">
+        🧭 Discover exciting features, demos, and resources to explore. Navigate using the options below. 🚀
+      </p>
+    </div>
+
+    <div class="button-container">
+      <a href="/register.html" class="button">📝 Register</a>
+      <a href="/user-list.html" class="button">👥 View Registered Users</a>
+      <a href="/dogs.html" class="button">🐕 Dog Images</a>
+    </div>
+  </div>
+
+  <script>
+    // Simulate fade-in animation effect
+    document.addEventListener("DOMContentLoaded", () => {
+      const welcomeContainer = document.querySelector(".welcome-container");
+
+      // Set initial opacity to 0
+      welcomeContainer.style.opacity = 0;
+
+      // Animate opacity to 1 over 1 second
+      let opacity = 0;
+      const interval = setInterval(() => {
+        opacity += 0.01; // Incrementally increase opacity
+        welcomeContainer.style.opacity = opacity;
+        if (opacity >= 1) {
+          clearInterval(interval); // Stop the interval when fully visible
+        }
+      }, 10); // 10ms interval for smooth animation
+    });
+  </script>
+</body>
+
+</html>
